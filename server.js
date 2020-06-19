@@ -45,7 +45,8 @@ app.get('/weather', (request,answer) => {
 
 function Weather(obj){
   this.forecast = obj.weather.description;
-  this.time = obj.datetime;
+  this.time = obj.datetime.toDateString();
+  
 }
 
 
