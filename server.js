@@ -17,14 +17,14 @@ app.use(cors());
 app.get('/location', (request,answer) => {
   let data = require('./data/location.json');
   // Transform data to match the app.js format
-  let finalData = new Location(data[0],searchQuery);
+  let finalData = new Location(data[0],request);
   // Send transformed data to webpage
   answer.status(200).json(finalData);
   }
 );
 
 function Location(obj, searchQuery) {
-  this.search_query = ajaxSettings.data.city;
+  this.search_query = searchQuery.query.city;
   this.latitude = obj.lat;
   this.longitude = obj.lon;
   this.formatted_query = obj.display_name;
