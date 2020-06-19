@@ -17,13 +17,14 @@ app.use(cors());
 app.get('/location', (request,answer) => {
   let data = require('./data/location.json');
   // Transform data to match the app.js format
-  let finalData = new Location(data[0]);
+  let finalData = new Location(data[0],searchQuery);
   // Send transformed data to webpage
   answer.status(200).json(finalData);
   }
 );
 
-function Location(obj) {
+function Location(obj, searchQuery) {
+  this.search_query = ajaxSettings.data.city;
   this.latitude = obj.lat;
   this.longitude = obj.lon;
   this.formatted_query = obj.display_name;
@@ -45,7 +46,7 @@ app.get('/weather', (request,answer) => {
 
 function Weather(obj){
   this.forecast = obj.weather.description;
-  this.time = obj.datetime  
+  this.time = obj.datetime.toDateString();  
 }
 
 app.use((error, request, answer, next) => {
