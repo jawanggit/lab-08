@@ -21,9 +21,12 @@ The project uses javascript and get method.
 
 01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource.-->
 
-06-18-2020 7:30pm - completed feature 1
-06-18-2020 11:30pm - added searchquery feature which shows what was typed in by the user into City Explorer
+06-18-2020 7:30pm - completed feature 1 of lab 6
+06-18-2020 11:30pm - added searchquery feature which shows what was typed in by the user into City Explorer of 
 06-19-2020 11:21pm - Updated the code to output correct date format when reading the weather.json file
+
+06/20/2020 2:57pm - completed feature 2 of lab 7
+
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
