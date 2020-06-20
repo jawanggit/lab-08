@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { response } = require('express');
+const superagent = require('superagent')
 const PORT = process.env.PORT;
 
 //Create an "instance" of express as our app
@@ -12,16 +13,29 @@ const app = express();
 
 app.use(cors());
 
-//Feature 2 of Lab 6:
+Feature 
 
 app.get('/location', (request,answer) => {
-  let data = require('./data/location.json');
-  // Transform data to match the app.js format
-  let finalData = new Location(data[0],request);
-  // Send transformed data to webpage
-  answer.status(200).json(finalData);
-  }
-);
+
+const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${request.query.city}=json`
+
+superagent.get(url)
+  .then(data =>{
+    let finaldata = new Location(data.body[0], request.query.city);
+    answer.status(200).send(finalData);
+  })
+  .catch(() => {
+    response.status(500).send('So sorry, something went wrong.');
+  });
+
+// app.get('/location', (request,answer) => {
+//   let data = require('./data/location.json');
+//   // Transform data to match the app.js format
+//   let finalData = new Location(data[0],request);
+//   // Send transformed data to webpage
+//   answer.status(200).json(finalData);
+//   }
+// );
 
 function Location(obj, searchQuery) {
   this.search_query = searchQuery.query.city;
@@ -29,6 +43,9 @@ function Location(obj, searchQuery) {
   this.longitude = obj.lon;
   this.formatted_query = obj.display_name;
 }
+
+
+
 
 //Feature 3 of Lab 6:
 app.get('/weather', (request,answer) => {
