@@ -1,5 +1,5 @@
 {
-  "name": "lab-06",
+  "name": "lab-07",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jawanggit/lab-06.git"
+    "url": "git+https://github.com/jawanggit/lab-07.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jawanggit/lab-06/issues"
+    "url": "https://github.com/jawanggit/lab-07/issues"
   },
-  "homepage": "https://github.com/jawanggit/lab-06#readme",
+  "homepage": "https://github.com/jawanggit/lab-07#readme",
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
