@@ -42,7 +42,8 @@ function Location(obj, searchQuery) {
 //Feature 3 of Lab 7:
 app.get('/weather', (request,response) => {
   const url = `https://api.weatherbit.io/v2.0/current`;
-  console.log(request)
+  console.log(request.query)
+  console.log(request.query.latitude)
   const queryParams = {
     lat: request.query.latitude,
     lon: request.query.longitude,
@@ -80,10 +81,10 @@ app.get('/trails', (request,response) => {
   const url = `https://www.hikingproject.com/data/get-trails?lat=${coordinates.lat}&lon=${coordinates.lon}`
   superagent.get(url)
   .set('key', process.env.TRAIL_API_KEY)
-  .then(data =>{
+  .then(data => {
     let output = data.body.trails.map(object => {
       return new Trails(object)
-    }
+    })
   })
 
 })
@@ -97,8 +98,8 @@ function Trails(object){
   this.summary = object.summary;
   this.trail_url = object.url;
   this.conditions = object.conditionDetails
-  this.condition_date = new Date(object.conditionDate)
-  this.condition_time = 
+  this.condition_date = new Date(object.conditionDate).toDateString();
+  // this.condition_time = new
 }
 
 
