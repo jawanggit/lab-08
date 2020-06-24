@@ -4,7 +4,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { response } = require('express');
+// const { response, json } = require('express');
 const superagent = require('superagent');
 const PORT = process.env.PORT;
 const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
@@ -14,15 +14,34 @@ const app = express();
 
 app.use(cors());
 
+// let location = {};
+
 app.get('/location', (request,response) => {
   
-  const url = `https://us1.locationiq.com/v1/search.php?key=${GEOCODE_API_KEY}&q=${request.query.city}&format=json`;
+  const url = `https://us1.locationiq.com/v1/search.php`;
   
-  superagent.get(url)  
+  let queryObject ={
+    key: process.env.GEOCODE_API_KEY,
+    format: 'json',
+    q: request.query.city
+  }
+
+  // if (locations[request.query.city]){
+  //   response.status(200).send(locations[request.query.city])
+  // }
+  // else{
+  //   fetchLocationDatatFromAPI(reqeust.query.city)
+  // }
+  
+
+  superagent.get(url)
+  .query(queryObject)
   .then(data =>{
     console.log(data.body[0]);
     let finalData = new Location(data.body[0], request.query.city);
-    console.log(finalData)
+    
+    // locations[request.query.city] = finalData;
+
     response.status(200).send(finalData);
     
   })
@@ -34,40 +53,30 @@ app.get('/location', (request,response) => {
 function Location(obj, searchQuery) {
 
   this.search_query = searchQuery;
+  this.formatted_query = obj.display_name;
   this.latitude = obj.lat;
   this.longitude = obj.lon;
-  this.formatted_query = obj.display_name;
+  
 }
 
 //Feature 3 of Lab 7:
-app.get('/weather', (request,response) => {
-  const url = `https://api.weatherbit.io/v2.0/current`;
-  console.log(request.query)
-  console.log(request.query.latitude)
-  const queryParams = {
-    lat: request.query.latitude,
-    lon: request.query.longitude,
-  }
 
+
+app.get('/weather', (request,response) => {
+  const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${request.query.latitude}&lon=${request.query.longitude}&key=${process.env.WEATHER_API_KEY}&days=8`
+  console.log(url)
   superagent.get(url)
-  .set('key', process.env.WEATHER_API_KEY)
-  .query(queryParams)
   .then(weatherData =>{
-    
-    let output = weatherData.body.data.map(object => {
-      return new Weather(object.weather,object.last_ob_time)
+      let output = weatherData.body.data.map(object => {
+      return new Weather(object.weather,object.datetime)
     })
     
-    // let allWeather = [];
-    // weatherData.body.data.forEach(obj =>{
-    //   let weather = new Weather(obj);
-    //  allWeather.push(weather);
-    // });
-
-    response.status(200).send(ouput);
+    response.status(200).send(output);
+    
   })
   .catch(() => {
     response.status(500).send('So sorry, something went wrong with the weather.');
+
   });
 
 });
@@ -78,14 +87,22 @@ function Weather(info, time){
 }
 
 app.get('/trails', (request,response) => {
-  const url = `https://www.hikingproject.com/data/get-trails?lat=${coordinates.lat}&lon=${coordinates.lon}`
+  const url = `https://www.hikingproject.com/data/get-trails?lat=${request.query.latitude}&lon=${request.query.longitude}&key=${process.env.TRAIL_API_KEY}`
+  console.log(url)
   superagent.get(url)
-  .set('key', process.env.TRAIL_API_KEY)
   .then(data => {
     let output = data.body.trails.map(object => {
       return new Trails(object)
+      
     })
+
+    response.status(200).send(output);
   })
+  .catch((e) => {
+    // console.log(e)
+    response.status(500).send('So sorry, something went wrong with the trail info.');
+
+  });
 
 })
 
@@ -98,14 +115,16 @@ function Trails(object){
   this.summary = object.summary;
   this.trail_url = object.url;
   this.conditions = object.conditionDetails
-  this.condition_date = new Date(object.conditionDate).toDateString();
-  // this.condition_time = new
+  this.condition_date = object.conditionDate.slice(0,9);
+  this.condition_time = object.conditionDate.slice(11,18);
+  console.log(this.condition_time)
+  console.log(this.condition_date)
 }
 
 
 app.use((error, request, answer, next) => {
   console.log(error);
-  answer.status(500).send('Sorry, something went wrong');
+  response.status(500).send('Sorry, something went wrong');
 });
 
 app.listen( PORT, () => console.log(`Server Port: ${PORT}`));
