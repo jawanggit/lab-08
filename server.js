@@ -4,7 +4,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-// const { response, json } = require('express');
+const { response } = require('express');
 const superagent = require('superagent');
 const PORT = process.env.PORT;
 const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
@@ -20,7 +20,7 @@ app.get('/location', (request,response) => {
   
   const url = `https://us1.locationiq.com/v1/search.php`;
   
-  let queryObject ={
+  let queryObject = {
     key: process.env.GEOCODE_API_KEY,
     format: 'json',
     q: request.query.city
@@ -45,7 +45,8 @@ app.get('/location', (request,response) => {
     response.status(200).send(finalData);
     
   })
-  .catch(() => {
+  .catch((e) => {
+    console.log(e)
     response.status(500).send('So sorry, something went wrong.');
   });
 });
