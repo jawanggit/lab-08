@@ -116,8 +116,8 @@ function Trails(object){
   this.summary = object.summary;
   this.trail_url = object.url;
   this.conditions = object.conditionDetails
-  this.condition_date = object.conditionDate.slice(0,9);
-  this.condition_time = object.conditionDate.slice(11,18);
+  this.condition_date = object.conditionDate.slice(0,10);
+  this.condition_time = object.conditionDate.slice(11,19);
   console.log(this.condition_time)
   console.log(this.condition_date)
 }
