@@ -4,7 +4,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-// const { response } = require('express');
+const pg = require('pg')
 const superagent = require('superagent');
 const PORT = process.env.PORT;
 const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
@@ -14,41 +14,46 @@ const app = express();
 
 app.use(cors());
 
-// let location = {};
+//create a SQL client connection
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => {throw err;});
+
+let location = {};
 
 app.get('/location', (request,response) => {
-  
-  const url = `https://us1.locationiq.com/v1/search.php`;
-  
-  let queryObject = {
-    key: process.env.GEOCODE_API_KEY,
-    format: 'json',
-    q: request.query.city
-  }
-
-  // if (locations[request.query.city]){
-  //   response.status(200).send(locations[request.query.city])
-  // }
-  // else{
-  //   fetchLocationDatatFromAPI(reqeust.query.city)
-  // }
-  
-
-  superagent.get(url)
-  .query(queryObject)
-  .then(data =>{
-    console.log(data.body[0]);
-    let finalData = new Location(data.body[0], request.query.city);
     
-    // locations[request.query.city] = finalData;
 
-    response.status(200).send(finalData);
+  if (location[request.query.city]){
+    response.status(200).send(location[request.query.city]);
+  }else{
+
     
-  })
-  .catch((e) => {
-    console.log(e)
-    response.status(500).send('So sorry, something went wrong.');
-  });
+    const url = `https://us1.locationiq.com/v1/search.php`;
+    
+    let queryObject = {
+      key: process.env.GEOCODE_API_KEY,
+      format: 'json',
+      q: request.query.city
+    }
+
+    superagent.get(url)
+    .query(queryObject)
+    .then(data =>{
+      console.log(data.body[0]);
+      let finalDataObj = new Location(data.body[0], request.query.city);
+
+      location[request.query.city] = finalDataObj;
+
+      
+
+      response.status(200).send(finalData);
+      
+    })
+    .catch((e) => {
+      console.log(e)
+      response.status(500).send('So sorry, something went wrong.');
+    });
+  };
 });
 
 function Location(obj, searchQuery) {
