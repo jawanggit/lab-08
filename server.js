@@ -37,7 +37,7 @@ app.get('/location', (request,response) => {
   const SQL = 'SELECT * FROM city_explorer_1 WHERE cityname = $1'
   client.query(SQL,query)
   .then (results => {
-    console.log(results);
+    console.log(results.rows[0].cityname);
     response.status(200).json(results);
   })
   .catch( error => {response.status(500).send(error)
@@ -65,14 +65,14 @@ app.get('/location', (request,response) => {
       let finalDataObj = new Location(data.body[0], request.query.city);
      
       location[request.query.city] = finalDataObj;
-      // console.log(response)
+     
       //send requested information to front-end
       response.status(200).send(finalDataObj);
       
       //after saving object to an array of objects, save/insert request to SQL table
       let cityName = request.query.city
-      let latitude_value = request.query.latitude
-      let longitude_value = request.query.longitude
+      let latitude_value = finalDataObj.latitude
+      let longitude_value = finalDataObj.longitude
       let safeQuery = [cityName, latitude_value, longitude_value]
 
       let SQL = 'INSERT INTO city_explorer_1 (cityName, latitude_value, longitude_value) VALUES ($1, $2, $3) RETURNING *'
